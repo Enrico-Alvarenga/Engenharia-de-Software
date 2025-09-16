@@ -1,8 +1,8 @@
 # Projeto da Disciplina de Engenharia de Software - UNIFESP
 
 ## Integrantes
-- **Enrico Alvarenga** — RA: 171.280  
-- **Eduardo Cipolaro** — RA: 168.797  
+- **Enrico Alvarenga**  RA: 171.280  
+- **Eduardo Cipolaro**  RA: 168.797  
 
 ## Descrição Geral
 Este repositório contém o projeto desenvolvido na disciplina de **Engenharia de Software** do curso de Ciência da Computação da UNIFESP.  
