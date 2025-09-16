@@ -9,7 +9,7 @@ Este repositório contém o projeto desenvolvido na disciplina de **Engenharia d
 
 O objetivo é aplicar os conceitos estudados ao longo da disciplina no desenvolvimento completo de um sistema de software, cobrindo desde a especificação de requisitos até a implementação e testes.  
 
-## 🛠Tema do Projeto
+## Tema do Projeto
 O sistema escolhido para desenvolvimento é um **Sistema de Controle de Biblioteca**.  
 
 O software permitirá gerenciar o acervo de livros de uma biblioteca, registrar usuários, controlar empréstimos e devoluções, além de gerar relatórios sobre o uso do sistema.  
