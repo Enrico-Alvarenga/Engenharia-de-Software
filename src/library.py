@@ -46,3 +46,23 @@ class SistemaBiblioteca:
         Consulta e retorna os dados de um usuário pelo seu RA.
         """
         return self.usuarios.get(ra)
+
+    # --- MÉTODO PARA O CASO DE USO 3: EMPRÉSTIMO ---
+    def realizar_emprestimo(self, ra_usuario, isbn_livro):
+        """
+        Realiza o empréstimo de um livro para um usuário.
+        Retorna True se o empréstimo for bem-sucedido, False caso contrário.
+        """
+        usuario = self.consultar_usuario_por_ra(ra_usuario)
+        livro = self.consultar_livro_por_isbn(isbn_livro)
+
+        # Valida se o usuário e o livro existem e se o livro está disponível
+        if usuario and livro and livro['disponivel']:
+            # Atualiza o status do livro
+            livro['disponivel'] = False
+            # Adiciona o livro na lista do usuário
+            usuario['livros_emprestados'].append(isbn_livro)
+            return True
+        
+        # Se qualquer uma das condições falhar, retorna False
+        return False
