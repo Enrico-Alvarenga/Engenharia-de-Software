@@ -34,13 +34,13 @@ def test_cadastrar_usuario():
 def test_emprestimo_livro_sucesso():
     """Testa o 'caminho feliz' do empréstimo de um livro."""
     sistema = SistemaBiblioteca()
-    # PREPARAÇÃO: Cadastra o livro e o usuário
+    # PREPARAÇÃO
     isbn = "978-0321765723"
     ra = "171280"
     sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
     sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
 
-    # AÇÃO: Realiza o empréstimo
+    # AÇÃO
     sucesso = sistema.realizar_emprestimo(ra_usuario=ra, isbn_livro=isbn)
 
     # VERIFICAÇÃO
@@ -81,27 +81,25 @@ def test_emprestimo_livro_inexistente():
     # VERIFICAÇÃO
     assert sucesso is False
 
-# --- NOVOS TESTES PARA O CASO DE USO 4: DEVOLUÇÃO ---
+# --- TESTES PARA O CASO DE USO 4: DEVOLUÇÃO ---
 
 def test_devolucao_livro_sucesso():
     """Testa o 'caminho feliz' da devolução de um livro."""
     sistema = SistemaBiblioteca()
-    # PREPARAÇÃO: Cadastra livro, usuário e realiza um empréstimo
+    # PREPARAÇÃO
     isbn = "978-0321765723"
     ra = "171280"
     sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
     sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
     sistema.realizar_emprestimo(ra_usuario=ra, isbn_livro=isbn)
 
-    # AÇÃO: Realiza a devolução
+    # AÇÃO
     sucesso = sistema.realizar_devolucao(ra_usuario=ra, isbn_livro=isbn)
 
     # VERIFICAÇÃO
     assert sucesso is True
-    # Verifica se o livro voltou a ficar disponível
     livro = sistema.consultar_livro_por_isbn(isbn)
     assert livro['disponivel'] is True
-    # Verifica se o livro saiu da lista do usuário
     usuario = sistema.consultar_usuario_por_ra(ra)
     assert isbn not in usuario['livros_emprestados']
 
@@ -114,8 +112,34 @@ def test_devolucao_livro_nao_emprestado():
     sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
     sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
 
-    # AÇÃO: Tenta devolver um livro que nunca foi emprestado
+    # AÇÃO
     sucesso = sistema.realizar_devolucao(ra_usuario=ra, isbn_livro=isbn)
 
     # VERIFICAÇÃO
     assert sucesso is False
+
+# --- NOVO TESTE PARA O CASO DE USO 5: CONSULTAS / RELATÓRIOS ---
+
+def test_listar_livros_disponiveis():
+    """Testa a listagem de livros disponíveis, incluindo um livro que foi emprestado."""
+    sistema = SistemaBiblioteca()
+    # PREPARAÇÃO
+    isbn1 = "111-1111111111"
+    isbn2 = "222-2222222222"
+    isbn3 = "333-3333333333"
+    ra = "171280"
+    sistema.cadastrar_livro(titulo="Livro A", autor="Autor A", isbn=isbn1)
+    sistema.cadastrar_livro(titulo="Livro B", autor="Autor B", isbn=isbn2)
+    sistema.cadastrar_livro(titulo="Livro C (Emprestado)", autor="Autor C", isbn=isbn3)
+    sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
+    sistema.realizar_emprestimo(ra_usuario=ra, isbn_livro=isbn3)
+
+    # AÇÃO
+    livros_disponiveis = sistema.listar_livros_disponiveis()
+
+    # VERIFICAÇÃO
+    assert len(livros_disponiveis) == 2
+    titulos_disponiveis = [livro['titulo'] for livro in livros_disponiveis]
+    assert "Livro A" in titulos_disponiveis
+    assert "Livro B" in titulos_disponiveis
+    assert "Livro C (Emprestado)" not in titulos_disponiveis
