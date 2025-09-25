@@ -56,15 +56,11 @@ class SistemaBiblioteca:
         usuario = self.consultar_usuario_por_ra(ra_usuario)
         livro = self.consultar_livro_por_isbn(isbn_livro)
 
-        # Valida se o usuário e o livro existem e se o livro está disponível
         if usuario and livro and livro['disponivel']:
-            # Atualiza o status do livro
             livro['disponivel'] = False
-            # Adiciona o livro na lista do usuário
             usuario['livros_emprestados'].append(isbn_livro)
             return True
         
-        # Se qualquer uma das condições falhar, retorna False
         return False
 
     # --- MÉTODO PARA O CASO DE USO 4: DEVOLUÇÃO ---
@@ -76,13 +72,16 @@ class SistemaBiblioteca:
         usuario = self.consultar_usuario_por_ra(ra_usuario)
         livro = self.consultar_livro_por_isbn(isbn_livro)
 
-        # Valida se o usuário existe, se o livro existe e se o livro está na lista do usuário
         if usuario and livro and isbn_livro in usuario['livros_emprestados']:
-            # Atualiza o status do livro
             livro['disponivel'] = True
-            # Remove o livro da lista do usuário
             usuario['livros_emprestados'].remove(isbn_livro)
             return True
             
-        # Se qualquer uma das condições falhar, retorna False
         return False
+
+    # --- MÉTODO PARA O CASO DE USO 5: CONSULTAS / RELATÓRIOS ---
+    def listar_livros_disponiveis(self):
+        """
+        Retorna uma lista de todos os livros com status 'disponivel'.
+        """
+        return [livro for livro in self.livros.values() if livro['disponivel']]
