@@ -22,8 +22,8 @@ class SistemaBiblioteca:
                 'autor': autor,
                 'disponivel': True
             }
-            return True  # Retorna sucesso
-        return False  # Retorna falha (livro já existe)
+            return True
+        return False
 
     def consultar_livro_por_isbn(self, isbn):
         """
@@ -38,8 +38,8 @@ class SistemaBiblioteca:
         """
         if ra not in self.usuarios:
             self.usuarios[ra] = {'nome': nome, 'livros_emprestados': []}
-            return True  # Retorna sucesso
-        return False  # Retorna falha (usuário já existe)
+            return True
+        return False
 
     def consultar_usuario_por_ra(self, ra):
         """
@@ -79,9 +79,35 @@ class SistemaBiblioteca:
             
         return False
 
-    # --- MÉTODO PARA O CASO DE USO 5: CONSULTAS / RELATÓRIOS ---
+    # --- MÉTODOS PARA CONSULTAS / RELATÓRIOS ---
     def listar_livros_disponiveis(self):
         """
-        Retorna uma lista de todos os livros com status 'disponivel'.
+        Retorna uma lista de dicionários, onde cada um representa um livro disponível.
         """
         return [livro for livro in self.livros.values() if livro['disponivel']]
+
+    def consultar_livros_do_usuario(self, ra_usuario):
+        """
+        Retorna uma lista de dicionários dos livros emprestados por um usuário.
+        Retorna None se o usuário não for encontrado.
+        Retorna uma lista vazia se o usuário não tiver livros.
+        """
+        usuario = self.consultar_usuario_por_ra(ra_usuario)
+        if not usuario:
+            return None
+
+        livros_emprestados = []
+        for isbn in usuario['livros_emprestados']:
+            livro = self.consultar_livro_por_isbn(isbn)
+            if livro:
+                livros_emprestados.append(livro)
+        
+        return livros_emprestados
+
+    def listar_todos_os_livros(self):
+        """Retorna uma lista de todos os livros cadastrados."""
+        return list(self.livros.values())
+
+    def listar_todos_os_usuarios(self):
+        """Retorna uma lista de todos os usuários cadastrados."""
+        return list(self.usuarios.values())
