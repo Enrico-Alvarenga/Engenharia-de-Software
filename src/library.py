@@ -66,3 +66,23 @@ class SistemaBiblioteca:
         
         # Se qualquer uma das condições falhar, retorna False
         return False
+
+    # --- MÉTODO PARA O CASO DE USO 4: DEVOLUÇÃO ---
+    def realizar_devolucao(self, ra_usuario, isbn_livro):
+        """
+        Registra a devolução de um livro por um usuário.
+        Retorna True se a devolução for bem-sucedida, False caso contrário.
+        """
+        usuario = self.consultar_usuario_por_ra(ra_usuario)
+        livro = self.consultar_livro_por_isbn(isbn_livro)
+
+        # Valida se o usuário existe, se o livro existe e se o livro está na lista do usuário
+        if usuario and livro and isbn_livro in usuario['livros_emprestados']:
+            # Atualiza o status do livro
+            livro['disponivel'] = True
+            # Remove o livro da lista do usuário
+            usuario['livros_emprestados'].remove(isbn_livro)
+            return True
+            
+        # Se qualquer uma das condições falhar, retorna False
+        return False
