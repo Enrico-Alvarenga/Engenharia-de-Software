@@ -29,7 +29,7 @@ def test_cadastrar_usuario():
     assert usuario is not None
     assert usuario['nome'] == "Eduardo Cipolaro"
 
-# --- NOVOS TESTES PARA O CASO DE USO 3: EMPRÉSTIMO ---
+# --- TESTES PARA O CASO DE USO 3: EMPRÉSTIMO ---
 
 def test_emprestimo_livro_sucesso():
     """Testa o 'caminho feliz' do empréstimo de um livro."""
@@ -45,27 +45,24 @@ def test_emprestimo_livro_sucesso():
 
     # VERIFICAÇÃO
     assert sucesso is True
-    # Verifica se o livro ficou indisponível
     livro = sistema.consultar_livro_por_isbn(isbn)
     assert livro['disponivel'] is False
-    # Verifica se o livro está na lista do usuário
     usuario = sistema.consultar_usuario_por_ra(ra)
     assert isbn in usuario['livros_emprestados']
 
 def test_emprestimo_livro_indisponivel():
     """Testa a tentativa de emprestar um livro que já foi emprestado."""
     sistema = SistemaBiblioteca()
-    # PREPARAÇÃO: Cadastra livro e usuários
+    # PREPARAÇÃO
     isbn = "978-0321765723"
     ra1 = "171280"
     ra2 = "168797"
     sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
     sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra1)
     sistema.cadastrar_usuario(nome="Eduardo Cipolaro", ra=ra2)
-    # Primeiro empréstimo (deve funcionar)
     sistema.realizar_emprestimo(ra_usuario=ra1, isbn_livro=isbn)
 
-    # AÇÃO: Tenta emprestar o mesmo livro para outro usuário
+    # AÇÃO
     sucesso_segunda_tentativa = sistema.realizar_emprestimo(ra_usuario=ra2, isbn_livro=isbn)
 
     # VERIFICAÇÃO
@@ -78,8 +75,47 @@ def test_emprestimo_livro_inexistente():
     ra = "171280"
     sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
 
-    # AÇÃO: Tenta emprestar um livro com ISBN que não foi cadastrado
+    # AÇÃO
     sucesso = sistema.realizar_emprestimo(ra_usuario=ra, isbn_livro="999-9999999999")
+
+    # VERIFICAÇÃO
+    assert sucesso is False
+
+# --- NOVOS TESTES PARA O CASO DE USO 4: DEVOLUÇÃO ---
+
+def test_devolucao_livro_sucesso():
+    """Testa o 'caminho feliz' da devolução de um livro."""
+    sistema = SistemaBiblioteca()
+    # PREPARAÇÃO: Cadastra livro, usuário e realiza um empréstimo
+    isbn = "978-0321765723"
+    ra = "171280"
+    sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
+    sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
+    sistema.realizar_emprestimo(ra_usuario=ra, isbn_livro=isbn)
+
+    # AÇÃO: Realiza a devolução
+    sucesso = sistema.realizar_devolucao(ra_usuario=ra, isbn_livro=isbn)
+
+    # VERIFICAÇÃO
+    assert sucesso is True
+    # Verifica se o livro voltou a ficar disponível
+    livro = sistema.consultar_livro_por_isbn(isbn)
+    assert livro['disponivel'] is True
+    # Verifica se o livro saiu da lista do usuário
+    usuario = sistema.consultar_usuario_por_ra(ra)
+    assert isbn not in usuario['livros_emprestados']
+
+def test_devolucao_livro_nao_emprestado():
+    """Testa a tentativa de devolver um livro que não foi emprestado pelo usuário."""
+    sistema = SistemaBiblioteca()
+    # PREPARAÇÃO
+    isbn = "978-0321765723"
+    ra = "171280"
+    sistema.cadastrar_livro(titulo="Clean Code", autor="Robert C. Martin", isbn=isbn)
+    sistema.cadastrar_usuario(nome="Enrico Alvarenga", ra=ra)
+
+    # AÇÃO: Tenta devolver um livro que nunca foi emprestado
+    sucesso = sistema.realizar_devolucao(ra_usuario=ra, isbn_livro=isbn)
 
     # VERIFICAÇÃO
     assert sucesso is False
