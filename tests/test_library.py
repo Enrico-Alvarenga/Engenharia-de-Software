@@ -152,3 +152,4 @@ def test_listar_todos_os_usuarios():
     assert len(usuarios) == 2
     nomes = [user['nome'] for user in usuarios]
     assert "Enrico Alvarenga" in nomes
+    assert "Eduardo Cipolaro" in nomes
